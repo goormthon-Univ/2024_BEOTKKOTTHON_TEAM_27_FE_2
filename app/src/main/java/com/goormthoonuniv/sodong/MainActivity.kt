@@ -36,6 +36,9 @@ class MainActivity: BaseActivity<ActivityMainBinding>(ActivityMainBinding::infla
         webView.webViewClient = webViewClient
         webView.webChromeClient = webChromeClient
 
+        // Android 구분을 위한 User Agent 추가
+        webView.settings.userAgentString = webView.settings.userAgentString + " sodong_aos"
+
         // TODO: 크롬 인스펙터 확인
         WebView.setWebContentsDebuggingEnabled(true)
     }

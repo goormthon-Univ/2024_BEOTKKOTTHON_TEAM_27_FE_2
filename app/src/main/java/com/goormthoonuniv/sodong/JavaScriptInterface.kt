@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.webkit.JavascriptInterface
 import android.widget.Toast
 import androidx.core.content.ContextCompat.startActivity
@@ -33,6 +34,7 @@ class JavaScriptInterface(private val mContext: Context) {
      */
     @JavascriptInterface
     fun shareInsta(uriStr: String) {
+        Log.d("###shareInsta", uriStr)
         val shareIntent = Intent(Intent.ACTION_SEND)
         val bundle = Bundle()
 
@@ -75,6 +77,7 @@ class JavaScriptInterface(private val mContext: Context) {
      */
     @JavascriptInterface
     fun downloadImage(imgUrl: String): String {
+        Log.d("###downloadImage", imgUrl)
         try {
             return downloadImageToExternalStorage(imgUrl)
         } catch (e: IOException) {
@@ -127,5 +130,29 @@ class JavaScriptInterface(private val mContext: Context) {
         return uri.toString()
     }
 
+    /**
+     * openApp
+     * @param packageName - 앱 패키지 명 (com.kakao.talk - 카카오톡, com.towneers.www - 당근마켓, com.kakao.yellowid - 카카오톡 채널)
+     */
+    @JavascriptInterface
+    fun openApp(packageName: String) {
+        Log.d("###openApp", packageName)
+
+        val bundle = Bundle()
+        try {
+            val intent: Intent = mContext.packageManager.getLaunchIntentForPackage(packageName)
+                ?: throw Exception("Intent is null")
+
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(mContext, intent, bundle)
+        } catch (exception: Exception) {
+            exception.printStackTrace()
+            Toast.makeText(mContext, "앱을 설치해 주세요", Toast.LENGTH_LONG).show()
+
+            val url = "market://details?id=$packageName"
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            startActivity(mContext, intent, bundle)
+        }
+    }
 
 }
